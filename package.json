@@ -29,13 +29,12 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.cts",
   "files": [
-    "dist",
-    "image.png"
+    "dist"
   ],
   "scripts": {
     "build": "zshy -p tsconfig.dist.json",
-    "prepare": "pnpm run build",
-    "test": "pnpm run build && node --test test/test.*"
+    "prepare": "pnpm run build && pnpm test",
+    "test": "node --test test/test.*"
   },
   "prettier": "@quitsmx/prettier-config",
   "devDependencies": {
