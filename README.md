@@ -2,7 +2,10 @@
 
 Displays multiline text in the console, with icon and word wrap.
 
-[![CI][ci-badge]][ci-url]
+[![Test][ci-badge]][ci-url]
+[![NPM Version][npm-badge]][npm-url]
+[![Install size][size-badge]][size-url]
+[![License MIT][license-badge]][license-url]
 
 Make your messages more visible and offer a less crude alternative to a simple "throw".
 
@@ -12,7 +15,7 @@ Node.js 18.18.0 or above.
 
 Should work with Bun 1.2.23 and Deno 2.5.2, although I don't use them.
 
-Does **not works** in browsers.
+Does **not work** in browsers.
 
 ## Install
 
@@ -61,3 +64,9 @@ The [MIT License](LICENSE) © 2025-Present by QuITS
 
 [ci-badge]: https://github.com/quitsmx/show-text/actions/workflows/test.yml/badge.svg
 [ci-url]: https://github.com/quitsmx/show-text/actions/workflows/test.yml
+[npm-badge]: https://img.shields.io/npm/v/@quitsmx%2Fshow-text
+[npm-url]: https://www.npmjs.org/package/@quitsmx/show-text
+[license-badge]: https://img.shields.io/npm/l/@quitsmx%2Fshow-text
+[license-url]: ./LICENSE
+[size-badge]: https://packagephobia.com/badge?p=@quitsmx/show-text
+[size-url]: https://packagephobia.com/result?p=@quitsmx/show-text
