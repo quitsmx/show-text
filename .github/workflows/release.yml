@@ -46,7 +46,6 @@ jobs:
         env:
           PREV_TAG: v${{ steps.check.outputs.previous-version }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        id: repub
 
   # This is needed because https://github.com/actions/create-release/issues/71
   call_deploy:
