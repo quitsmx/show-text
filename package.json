@@ -1,0 +1,59 @@
+{
+  "name": "@quitsmx/show-text",
+  "version": "0.9.0",
+  "description": "Displays multiline text in the console, with icon and word wrap.",
+  "keywords": [
+    "error",
+    "messages",
+    "console"
+  ],
+  "homepage": "https://github.com/quitsmx/show-text#readme",
+  "bugs": "https://github.com/quitsmx/show-text/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/quitsmx/show-text.git"
+  },
+  "funding": "https://ko-fi.com/amarcruz",
+  "license": "MIT",
+  "author": "quitsmx <quitsmx@gmail.com>",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.cts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.cts",
+  "files": [
+    "dist",
+    "image.png"
+  ],
+  "scripts": {
+    "build": "zshy -p tsconfig.dist.json",
+    "prepare": "pnpm run build",
+    "test": "pnpm run build && node --test test/test.*"
+  },
+  "prettier": "@quitsmx/prettier-config",
+  "devDependencies": {
+    "@quitsmx/prettier-config": "^3.1.0",
+    "@tsconfig/strictest": "^2.0.6",
+    "@types/node": "^24.8.1",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.3",
+    "zshy": "^0.4.4"
+  },
+  "packageManager": "pnpm@10.18.3",
+  "engines": {
+    "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
+  },
+  "zshy": {
+    "exports": {
+      ".": "src/index.ts",
+      "./package.json": "./package.json"
+    }
+  }
+}

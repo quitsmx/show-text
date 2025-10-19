@@ -1,0 +1,51 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Tag to deploy'
+        required: true
+        type: string
+  workflow_call:
+    inputs:
+      tag_name:
+        description: 'Tag to deploy'
+        required: true
+        type: string
+
+jobs:
+  tag_deploy:
+    name: Tag Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      packages: write
+    steps:
+      - name: Checkout ${{ inputs.tag_name }}
+        uses: actions/checkout@v5
+        with:
+          ref: refs/tags/${{ inputs.tag_name }}
+
+      - name: Use latest Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '*'
+
+      - name: Install pnpm and dependencies
+        uses: pnpm/action-setup@v4.1.0
+        with:
+          run_install: >-
+            { recursive: true, args: [--frozen-lockfile, --ignore-scripts] }
+
+      - name: Use latest Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '*'
+          registry-url: https://npm.pkg.github.com
+
+      - name: Publish to GitHub
+        run: pnpm publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

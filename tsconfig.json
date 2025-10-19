@@ -1,0 +1,17 @@
+{
+  "extends": ["@tsconfig/strictest/tsconfig.json"],
+
+  "compilerOptions": {
+    "allowJs": true,
+    "erasableSyntaxOnly": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["es2022"],
+    "module": "nodenext",
+    "noEmit": true,
+    "target": "esnext",
+    "verbatimModuleSyntax": true,
+  },
+
+  "include": ["**/*"],
+  "exclude": [".git", ".vscode", "node_modules", "dist"],
+}
