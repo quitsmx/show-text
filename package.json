@@ -32,7 +32,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "zshy -p tsconfig.dist.json && sort-package-json",
+    "build": "zshy -p tsconfig.dist.json",
     "prepare": "pnpm run build && pnpm test",
     "test": "node --test test/test.*"
   },
@@ -42,7 +42,6 @@
     "@tsconfig/strictest": "^2.0.6",
     "@types/node": "^24.8.1",
     "prettier": "^3.6.2",
-    "sort-package-json": "^3.4.0",
     "typescript": "^5.9.3",
     "zshy": "^0.4.4"
   },
