@@ -86,7 +86,7 @@ const wrapText = (text: string, cols: number, left: number, indent: number) => {
 
     result.push(prefix + line)
 
-    if (indent > 0 && text) {
+    if (indent !== 0 && text) {
       cols -= indent
       prefix = ' '.repeat(LMARGIN + left + indent)
       indent = 0
@@ -126,14 +126,17 @@ const getLines = (v: unknown) => {
 const getLeft = (cols: number, left: number, match: RegExpExecArray) => {
   cols -= LMARGIN + RMARGIN
   const maxMargin = (cols * 0.4) | 0 // máx padding
+  if (match[0] === '<#->') {
+    return { left: 0, indent: 0 }
+  }
   const margin = ~~(match[1] ?? '')
   // margin es additivo, el total no debe ser < 0 ni > maxMargin
   left = Math.max(0, Math.min(left + margin, maxMargin))
   // indent sobrescribe, se conserva si no se da un nuevo valor
   let indent
   if (match[2] !== undefined) {
-    indent = left + ~~match[2] // puede ser < 0 o > availCols-20
-    indent = Math.min(Math.max(0, indent), cols - 20) - left
+    indent = ~~match[2] // debe ser -left..(availCols-left-21)
+    indent = Math.min(Math.max(-left, indent), cols - left - 21)
   }
   return { left, indent }
 }
@@ -149,6 +152,7 @@ const getLeft = (cols: number, left: number, match: RegExpExecArray) => {
  * los emoji y otros caracteres que podrían ocupar más de una columna.
  *
  * @param text - Message(s) to show
+ * @param type - Show as normal, warn, error or info
  */
 function printText(text: unknown | unknown[], type: PrefixType): void {
   const fn = methods[type]
