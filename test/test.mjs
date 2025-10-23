@@ -1,5 +1,5 @@
 import {
-  prefix,
+  PREFIX,
   showErrorText,
   showInfoText,
   showText,
@@ -36,7 +36,7 @@ void test('show simple text with `console.log`', () => {
   const getResult = setOutCon('log')
   const expected = `
  ─
-${prefix.ok}${text}
+${PREFIX.ok}${text}
  ─
 `
   showText(text)
@@ -48,7 +48,7 @@ void test('show info text with `console.info`', () => {
   const getResult = setOutCon('info')
   const expected = `
  ─
-${prefix.info}${text}
+${PREFIX.info}${text}
  ─
 `
   showInfoText(text)
@@ -60,7 +60,7 @@ void test('show warnings with `console.warn`', () => {
   const getResult = setOutCon('warn')
   const expected = `
  ─
-${prefix.warn}${text}
+${PREFIX.warn}${text}
  ─
 `
   showWarnText(text)
@@ -72,7 +72,7 @@ void test('show error text with `console.error`', () => {
   const getResult = setOutCon('error')
   const expected = `
  ─
-${prefix.error}${text}
+${PREFIX.error}${text}
  ─
 `
   showErrorText(text)
@@ -81,7 +81,7 @@ ${prefix.error}${text}
 
 void test('show message from Error object', () => {
   const error = new TypeError('Message from Error object')
-  const expected = ` ─ ${prefix.error}${error.stack || error.message} ─ `
+  const expected = ` ─ ${PREFIX.error}${error.stack || error.message} ─ `
   const getResult = setOutCon('error')
 
   showErrorText(error)
@@ -93,7 +93,7 @@ void test('show 2 or more messages', () => {
   const getResult = setOutCon('log')
   const expected = `
  ─
-${prefix.ok}Message 1
+${PREFIX.ok}Message 1
     Message 2
     Message 3
  ─
@@ -107,7 +107,7 @@ void test('show message with eol inside', () => {
   const getResult = setOutCon('log')
   const expected = `
  ─
-${prefix.ok}First line
+${PREFIX.ok}First line
     Same message, second line.
  ─
 `
@@ -124,7 +124,7 @@ void test('Long text wraps', () => {
   const getResult = setOutCon('info')
   const expected = `
  ─
-${prefix.info}Lorem ipsum dolor sit amet aute sit neque. Lorem ipsum dolor sit amet
+${PREFIX.info}Lorem ipsum dolor sit amet aute sit neque. Lorem ipsum dolor sit amet
     voluptas magna numquam nemo voluptate sit vero fugit rem labore. Lorem
     ipsum dolor sit amet amet incididunt aliquip enim sunt sed ullamco ea
     aliquam id consectetur minim. Lorem ipsum dolor sit amet sunt anim adipisci
@@ -144,7 +144,7 @@ void test('Force break long lines', () => {
   const getResult = setOutCon('log')
   const expected = `
  ─
-${prefix.ok}https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/filtering-and-searching-issues-and-pull-requests#building-advanced-filters-for-issues
+${PREFIX.ok}https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/filtering-and-searching-issues-and-pull-requests#building-advanced-filters-for-issues
  ─
 `
   showText(text)
@@ -160,7 +160,7 @@ void test('Force break long lines inside short lines', () => {
   const getResult = setOutCon('log')
   const expected = `
  ─
-${prefix.ok}First line
+${PREFIX.ok}First line
     https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/filtering-and-searching-issues-and-pull-requests#building-advanced-filters-for-issues
     LONG LINE END
     Last line
@@ -170,12 +170,48 @@ ${prefix.ok}First line
   assert.equal(getResult(), expected)
 })
 
-void test('Characters inside multiple spaces', () => {
-  const text = '  a\t b  c  d \f e   '
+void test('Trims surrounding spaces', () => {
+  const text = '  \ta b c  \t '
   const getResult = setOutCon('log')
   const expected = `
  ─
-${prefix.ok}a b c d e
+${PREFIX.ok}a b c
+ ─
+`
+  showText(text)
+  assert.equal(getResult(), expected)
+})
+
+void test('Keep multiple spaces inside characters', () => {
+  const text = '  a  b  c  '
+  const getResult = setOutCon('log')
+  const expected = `
+ ─
+${PREFIX.ok}a  b  c
+ ─
+`
+  showText(text)
+  assert.equal(getResult(), expected)
+})
+
+void test('Convert internal tabs to spaces', () => {
+  const text = '  a\t \t b\tc'
+  const getResult = setOutCon('log')
+  const expected = `
+ ─
+${PREFIX.ok}a    b c
+ ─
+`
+  showText(text)
+  assert.equal(getResult(), expected)
+})
+
+void test('Remove control characters', () => {
+  const text = '\0  a \0\f\v\x7F\b b \t\x1Fc\t'
+  const getResult = setOutCon('log')
+  const expected = `
+ ─
+${PREFIX.ok}a  b  c
  ─
 `
   showText(text)
@@ -186,7 +222,7 @@ void test('Empty text', () => {
   const getResult = setOutCon('log')
   const expected = `
  ─
-${prefix.ok}
+${PREFIX.ok}
  ─
 `
   showText('')
@@ -201,7 +237,7 @@ void test('With other types (Date, number, RegExp)', () => {
   const getResult = setOutCon('log')
   const expected = `
  ─
-${prefix.ok}2025-10-15 01:20:10Z
+${PREFIX.ok}2025-10-15 01:20:10Z
     ${num}
     ${re}
  ─

@@ -1,5 +1,5 @@
 const oneSpaceRe = /\s/
-const compactReG = /[\s\x00-\x1F\x7F]+/g
+const controlReG = /[\x00-\x1F\x7F]/g
 const EOL = /\r\n?|[\n\u2028\u2029]/u
 
 type PrefixType = 'ok' | 'info' | 'warn' | 'error'
@@ -25,13 +25,15 @@ type PrefixType = 'ok' | 'info' | 'warn' | 'error'
  * cuando sean desplegados con espacios circundantes.
  * @internal
  */
-export const prefix = {
-  ok: ' ✔️\uFE0F  ',
-  info: ' 💬️\uFE0F ',
-  warn: ' ⚠️\uFE0F  ',
-  error: ' ❌\uFE0F ',
+// prettier-ignore
+export const PREFIX = {
+  ok:    ' \u2714\uFE0F  ', // ✔️
+  info:  ' \uD83D\uDCAC ',  // 💬
+  warn:  ' \u26A0\uFE0F  ', // ⚠️
+  error: ' \u274c\uFE0F ',  // ❌
 }
-const padding = '    '
+const LMARGIN = 4 // separación fija del margén izquierdo
+const RMARGIN = 1
 
 /**
  * Esta función no es genérica (aunque podría serlo) y espera que `text`...
@@ -41,16 +43,20 @@ const padding = '    '
  *   como 1 solo espacio.
  * De otra manera, esta función no trabajará correctamente.
  *
- * @param text - Buffer
- * @param cols - Columnas
+ * @param text   - Buffer
+ * @param cols   - Columnas
+ * @param left   - Indentación de la 1er línea)
+ * @param indent - Indentación 2a línea y posteriores, en relación a `padding`
  * @returns Buffer formateado
  * @internal
  */
-const wrapText = (text: string, cols: number) => {
+const wrapText = (text: string, cols: number, left: number, indent: number) => {
   const result: string[] = []
-  cols -= padding.length + 1
+  let prefix = ' '.repeat(LMARGIN + left)
+  cols -= LMARGIN + RMARGIN + left
 
-  // va sacando el texto línea a línea
+  // Eliminamos los Zero-Width spaces y sacamos el texto línea a línea
+  // text = text.replaceAll('\u200B', '')
   do {
     const ch = text.at(cols)
     let line = ''
@@ -62,8 +68,8 @@ const wrapText = (text: string, cols: number) => {
       text = ''
     } else if (oneSpaceRe.test(ch)) {
       // ...un espacio, estamos entre 2 palabras
-      line = text.slice(0, cols)
-      text = text.slice(cols + 1)
+      line = text.slice(0, cols).trimEnd()
+      text = text.slice(cols).trimStart()
     } else {
       // ...un no-blanco, estamos dentro de una palabra, buscar
       // su inicio o el inicio del búfer para quebrar la palabra.
@@ -74,12 +80,17 @@ const wrapText = (text: string, cols: number) => {
           pos = text.length
         }
       }
-      line = text.slice(0, pos)
-      text = text.slice(pos + 1)
+      line = text.slice(0, pos).trimEnd()
+      text = text.slice(pos).trimStart()
     }
 
-    result.push(padding + line.trim())
-    //
+    result.push(prefix + line)
+
+    if (indent > 0 && text) {
+      cols -= indent
+      prefix = ' '.repeat(LMARGIN + left + indent)
+      indent = 0
+    }
   } while (text.length > 0)
 
   return result.join('\n')
@@ -109,12 +120,27 @@ const getLines = (v: unknown) => {
     .map(asStr)
     .join('\n')
     .split(EOL)
-    .map((s) => s.replaceAll(compactReG, ' ').trim())
+    .map((s) => s.replaceAll('\t', ' ').replaceAll(controlReG, '').trim())
+}
+
+const getLeft = (cols: number, left: number, match: RegExpExecArray) => {
+  cols -= LMARGIN + RMARGIN
+  const maxMargin = (cols * 0.4) | 0 // máx padding
+  const margin = ~~(match[1] ?? '')
+  // margin es additivo, el total no debe ser < 0 ni > maxMargin
+  left = Math.max(0, Math.min(left + margin, maxMargin))
+  // indent sobrescribe, se conserva si no se da un nuevo valor
+  let indent
+  if (match[2] !== undefined) {
+    indent = left + ~~match[2] // puede ser < 0 o > availCols-20
+    indent = Math.min(Math.max(0, indent), cols - 20) - left
+  }
+  return { left, indent }
 }
 
 /**
  * Muestra uno o más mensajes en la salida de error `stderr`.
- * @description
+ * @description  <#-2,0>
  * El mensaje o mensajes son mostrados de forma que destaquen en pantalla,
  * sin "romper" las palabras dentro de lo posible. \
  * El tipo recibido puede no ser `string`, pero se convierte por medio del
@@ -127,17 +153,26 @@ const getLines = (v: unknown) => {
 function printText(text: unknown | unknown[], type: PrefixType): void {
   const fn = methods[type]
   const out = fn === 'log' ? process.stdout : process.stderr
-  const cols = Math.max(Math.min(out?.columns || 80, 240), 40)
+  const cols = Math.max(Math.min(out.columns || 80, 240), 40)
   const sx = '─'.repeat(cols - 2)
   const lines = getLines(text)
   let first = true
+  let indent = 0
+  let left = 0
 
   console[fn](`\n ${sx}`)
   for (const line of lines) {
-    const text = wrapText(line, cols)
+    let grp = /^<#(-?\d{0,2})(?:,(-?\d\d?))?>/u.exec(line)
+    if (grp) {
+      const res = getLeft(cols, left, grp)
+      indent = res.indent ?? indent
+      left = res.left
+      continue
+    }
+    const text = wrapText(line, cols, left, indent)
     if (first) {
       first = false
-      console[fn](prefix[type] + text.trimStart())
+      console[fn](PREFIX[type] + text.slice(LMARGIN))
     } else {
       console[fn](text)
     }
