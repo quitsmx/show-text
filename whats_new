@@ -1,0 +1,14 @@
+## What’s new in 0.10.1
+
+###
+
+- Added whats_new file, with release notes
+
+### Changed
+
+- Publish with [Provenance] enabled
+- Update pnpm version in package.json
+
+### Fixed
+
+- Fix deploy.yml using non OIDC-capable version of pnm
