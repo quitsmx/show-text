@@ -45,7 +45,7 @@
     "typescript": "^5.9.3",
     "zshy": "^0.4.4"
   },
-  "packageManager": "pnpm@10.18.3",
+  "packageManager": "pnpm@10.19.0",
   "engines": {
     "node": "^18.18.0 || ^20.9.0 || >=21.1.0"
   },
