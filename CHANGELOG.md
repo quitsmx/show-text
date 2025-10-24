@@ -7,7 +7,22 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
-## [0.10.0] - 2025-10-20
+## [0.10.1] - 2025-10-24
+
+### Added
+
+- whats_new file, for use in release notes
+
+### Changed
+
+- Publish with [Provenance] enabled
+- Update pnpm version in package.json
+
+### Fixed
+
+- Fix deploy.yml using non OIDC-capable version of pnm
+
+## [0.10.0] - 2025-10-23
 
 This version adds indentation control and more tests.
 
@@ -37,9 +52,11 @@ This version adds indentation control and more tests.
 
 [Keep a Changelog]: https://keepachangelog.com/
 [Semantic Versioning]: https://semver.org/
+[Provenance]: https://docs.npmjs.com/trusted-publishers#automatic-provenance-generation
 
 <!-- Versions -->
 
-[Unreleased]: https://github.com/quitsmx/show-text/compare/v0.9.1...HEAD
+[Unreleased]: https://github.com/quitsmx/show-text/compare/v0.10.1...HEAD
+[0.10.1]: https://github.com/quitsmx/show-text/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/quitsmx/show-text/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/quitsmx/show-text/releases/tag/v0.9.0
